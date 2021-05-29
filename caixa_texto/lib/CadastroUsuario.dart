@@ -1,8 +1,10 @@
-import 'dart:ui';
-
+import 'package:brasil_fields/brasil_fields.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:validadores/Validador.dart';
+
+import 'Home.dart';
 
 class CadastroUsuario extends StatefulWidget {
   @override
@@ -10,9 +12,15 @@ class CadastroUsuario extends StatefulWidget {
 }
 
 class _CadastroUsuarioState extends State<CadastroUsuario> {
+  final _formKey = GlobalKey<FormState>();
+
+  void _irParaHome() {
+//Navegação de tela
+    Navigator.push(context, MaterialPageRoute(builder: (context) => Home()));
+  }
 
   TextEditingController _controllerNome = TextEditingController();
-  TextEditingController _controllerCpf = TextEditingController();
+  TextEditingController _controllerCPF = TextEditingController();
   TextEditingController _controllerEmail = TextEditingController();
   TextEditingController _controllerSenha = TextEditingController();
 
@@ -25,118 +33,139 @@ class _CadastroUsuarioState extends State<CadastroUsuario> {
       ),
       body: Container(
         padding: EdgeInsets.all(18),
-        decoration: BoxDecoration(color: Colors.black26),
+        decoration: BoxDecoration(color: Colors.black54),
         child: Form(
-          child: SingleChildScrollView(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: <Widget>[
-                Padding(
+            key: _formKey,
+            child: SingleChildScrollView(
+              child: Column(
+                crossAxisAlignment:
+                CrossAxisAlignment.stretch, //alinhamento em alongamento
+                children: <Widget>[
+                  Padding(
                     padding: EdgeInsets.all(32),
-                  child: Image.asset("imagens/usuario.png", height: 150, width: 150,),
-                ),
-                Padding(
-                    padding: EdgeInsets.all(0),
-                  child: TextFormField(
-                    controller: _controllerNome,
-                    keyboardType: TextInputType.text,
-                    style: TextStyle(fontSize: 20),
-                    decoration: InputDecoration(
-                      contentPadding: EdgeInsets.fromLTRB(32, 16, 32, 16),
-                      hintText: "Nome Completo",
-                      fillColor: Colors.white,
-                      filled: true,
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(32)
-                      )
+                    child: Image.asset(
+                      "imagens/usuario.png",
+                      height: 150,
+                      width: 150,
                     ),
-                    validator: (valor) {
-                      if(valor!.isEmpty){
-                        return "o nome é obrigatório!";
-                      }
-                      if(valor.length < 3){
-                        return "Digite um nome de ao menos três caracteres!";
-                      }
-                      return null;
-                    },
-                  )
-                ),
-                Padding(
-                    padding: EdgeInsets.fromLTRB(0, 15, 0, 0),
+                  ),
+                  Padding(
+                    padding: EdgeInsets.all(8),
                     child: TextFormField(
-                      controller: _controllerCpf,
-                      keyboardType: TextInputType.number,
-                      style: TextStyle(fontSize: 20),
+                      controller: _controllerNome,
+                      keyboardType: TextInputType.text,
+                      style: TextStyle(fontSize: 20, color: Colors.black),
                       decoration: InputDecoration(
-                          contentPadding: EdgeInsets.fromLTRB(32, 16, 32, 16),
-                          hintText: "Digite seu CPF",
-                          fillColor: Colors.white,
-                          filled: true,
-                          border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(32)
-                          )
+                        contentPadding: EdgeInsets.fromLTRB(32, 16, 32, 16),
+                        hintText: "Nome Completo",
+                        fillColor: Colors.white,
+                        filled: true,
+                        border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(32)),
                       ),
                       validator: (valor) {
                         return Validador()
                             .add(Validar.OBRIGATORIO,
                             msg: "Este campo é obrigatório!")
-                            .add(Validar.CPF, msg: "Cpf não é válido!")
+                            .minLength(3)
                             .valido(valor);
                       },
-                    )
-                ),
-                Padding(
-                    padding: EdgeInsets.fromLTRB(0, 15, 0, 0),
+                    ),
+                  ),
+                  Padding(
+                    padding: EdgeInsets.all(8),
+                    child: TextFormField(
+                      controller: _controllerCPF,
+                      keyboardType: TextInputType.text,
+                      inputFormatters: [
+                        WhitelistingTextInputFormatter.digitsOnly,
+                        CpfInputFormatter()
+                      ],
+                      style: TextStyle(fontSize: 20, color: Colors.black),
+                      decoration: InputDecoration(
+                        contentPadding: EdgeInsets.fromLTRB(32, 16, 32, 16),
+                        hintText: "CPF",
+                        fillColor: Colors.white,
+                        filled: true,
+                        border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(32)),
+                      ),
+                      validator: (valor) {
+                        return Validador()
+                            .add(Validar.OBRIGATORIO,
+                            msg: "Este campo é obrigatório!")
+                            .add(Validar.CPF, msg: "CPF não é valido!")
+                            .valido(valor);
+                      },
+                    ),
+                  ),
+                  Padding(
+                    padding: EdgeInsets.all(8),
                     child: TextFormField(
                       controller: _controllerEmail,
                       keyboardType: TextInputType.emailAddress,
-                      style: TextStyle(fontSize: 20),
+                      style: TextStyle(fontSize: 20, color: Colors.black),
                       decoration: InputDecoration(
-                          contentPadding: EdgeInsets.fromLTRB(32, 16, 32, 16),
-                          hintText: "Digite seu E-mail",
-                          fillColor: Colors.white,
-                          filled: true,
-                          border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(32)
-                          )
+                        contentPadding: EdgeInsets.fromLTRB(32, 16, 32, 16),
+                        hintText: "E-mail",
+                        fillColor: Colors.white,
+                        filled: true,
+                        border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(32)),
                       ),
                       validator: (valor) {
                         return Validador()
                             .add(Validar.OBRIGATORIO,
                             msg: "Este campo é obrigatório!")
-                            .add(Validar.EMAIL, msg: "Email não é válido!")
+                            .add(Validar.EMAIL, msg: "E-mail não é valido!")
                             .valido(valor);
                       },
-                    )
-                ),
-                Padding(
-                    padding: EdgeInsets.fromLTRB(0, 15, 0, 0),
+                    ),
+                  ),
+                  Padding(
+                    padding: EdgeInsets.all(8),
                     child: TextFormField(
                       controller: _controllerSenha,
-                      keyboardType: TextInputType.text,
-                      style: TextStyle(fontSize: 20),
+                      obscureText: true,
+                      keyboardType: TextInputType.visiblePassword,
+                      style: TextStyle(fontSize: 20, color: Colors.black),
                       decoration: InputDecoration(
-                          contentPadding: EdgeInsets.fromLTRB(32, 16, 32, 16),
-                          hintText: "Digite sua Senha",
-                          fillColor: Colors.white,
-                          filled: true,
-                          border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(32)
-                          )
+                        contentPadding: EdgeInsets.fromLTRB(32, 16, 32, 16),
+                        hintText: "Senha",
+                        fillColor: Colors.white,
+                        filled: true,
+                        border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(32)),
                       ),
                       validator: (valor) {
                         return Validador()
                             .add(Validar.OBRIGATORIO,
                             msg: "Este campo é obrigatório!")
-                            .add(Validar.EMAIL, msg: "Email não é válido!")
                             .valido(valor);
                       },
-                    )
-                ),
-              ],
-            ),
-          ),
-        ),
+                    ),
+                  ),
+                  Padding(
+                    padding: EdgeInsets.all(16),
+                    child: RaisedButton(
+                      child: Text(
+                        "Cadastrar",
+                        style: TextStyle(color: Colors.white, fontSize: 20),
+                      ),
+                      color: Colors.blueGrey,
+                      padding: EdgeInsets.fromLTRB(32, 16, 32, 16),
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(32)),
+                      onPressed: () {
+                        if (_formKey.currentState!.validate()) {
+                          _irParaHome();
+                        }
+                      },
+                    ),
+                  )
+                ],
+              ),
+            )),
       ),
     );
   }
